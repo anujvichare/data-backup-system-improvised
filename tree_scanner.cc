@@ -5,30 +5,36 @@ class FileTreeScanner
 {
 	private:
 		
-		string SourceRootDir, DestRootDir, tempPath;
-		int LogFileFD;
+		string sourceRootDir, destRootDir, tempPath;
+		int logFileFD;
 		
-		static string ThisClassName;	
+		static string THISCLASSNAME;	
 		LogWriter objLogWriter;		
 		
 		//private member functions
-		bool Checksum(const char*,const char*);
-		bool isFileExist(const char*);
+		bool CheckSum(const char*,const char*);
+		bool IsFileExist(const char*);
 		string ParsePath(const char*);
 
 	public:
 		//constructor
-		FileTreeScanner(const char*, const char*)
-		{
-			
+		FileTreeScanner(const char* startRootDir, const char* startDestDir)
+		{	
+			string THISCLASSNAME = "FileTreeScanner";
+			objLogWriter.assignFileName(THISCLASSNAME);	
+	
+			sourceRootDir.assign(startRootDir);
+			tempPath.assign(startRootDir);
+	
+			destRootDir.assign(startDestDir);
 		}
 		FileTreeScanner(const char* startdir)
-		{	
-				
-			string ThisClassName = "FileTreeScanner";
-			objLogWriter.assignFileName(ThisClassName);	
+		{
+					
+			string THISCLASSNAME = "FileTreeScanner";
+			objLogWriter.assignFileName(THISCLASSNAME);	
 	
-			SourceRootDir.assign(startdir);
+			sourceRootDir.assign(startdir);
 			tempPath.assign(startdir);
 		}
 		
@@ -39,13 +45,22 @@ class FileTreeScanner
 
 };
 
-bool FileTreeScanner::Checksum(const char *sourceFilePath, const char *destinatioFilePath)
+bool FileTreeScanner::CheckSum(const char *sourceFilePath, const char *destinatioFilePath)
 {
 
 	return true;
 }
 
-bool FileTreeScanner::isFileExist(const char *FilePath)
+////////////////////////////////////////////////////
+//
+// 	name: 		IsFileexist()
+//	parameters:	char *
+//	return value:	boolean
+//	purpose: 	check whether file exist or not
+//
+///////////////////////////////////////////////////
+
+bool FileTreeScanner::IsFileExist(const char *FilePath)
 {
 	if(access(FilePath, F_OK) != -1)
 	{
@@ -55,10 +70,50 @@ bool FileTreeScanner::isFileExist(const char *FilePath)
 	return false;
 }
 
-string FileTreeScanner::ParsePath(const char *PathRootDir)
-{
-	string objExistingPath;
+//////////////////////////////////////////////////////
+//
+//	name: 		ParsePath()
+//	parameters: 	accepts char *
+//	returns: 	string object
+//	purpose: 	Parse the path till end 
+//
+/////////////////////////////////////////////////////
 
+string FileTreeScanner::ParsePath(const char *PathToVerify)
+{
+//	char *PathToVerify = PathToVerify_const;
+	string objExistingPath = destRootDir;
+	string tempPath = destRootDir;
+	struct stat tempBuffer;		
+
+	char * tempStr;
+	strcpy(tempStr,PathToVerify);
+
+	char* tempDirName = strtok((&tempStr[0] + objExistingPath.length()),"/");
+	
+	while(tempDirName != NULL)
+	{
+		tempPath += "/";
+		tempPath += tempDirName;
+
+		if(lstat(tempPath.c_str(),&tempBuffer)<0)
+		{
+			if(errno == ENOENT)
+				break;
+		}
+		else if(S_ISDIR(tempBuffer.st_mode))
+		{
+			objExistingPath += tempPath;
+		}
+		else
+		{
+			break;
+		}
+
+		tempDirName = strtok(NULL,"/");
+	}
+	
+	
 
 	return objExistingPath;
 }
@@ -76,7 +131,7 @@ int FileTreeScanner::ScanFiles(string tempPath)
 	
 	DIR *dir;
 	struct dirent *dirEntry;
-	string filepath;
+	string filepath, destFilePath;
 	
 	filepath = tempPath;	
 		
@@ -118,7 +173,25 @@ int FileTreeScanner::ScanFiles(string tempPath)
 		}
 		else
 		{
-			objLogWriter.writeToLog(tempPath);
+			
+			objLogWriter.writeToLog(filepath);
+			
+			destFilePath = filepath;
+			destFilePath.replace(0,sourceRootDir.length(),destRootDir.c_str());
+			
+			if(IsFileExist(destFilePath.c_str()))
+			{
+				//call for checksum
+			}
+			else
+			{
+				string tempStr = ParsePath(destFilePath.c_str());
+			//ToDO	
+				cout<<tempStr<<endl;
+			}
+			
+			//code to perform operation on files
+
 			temp_no_of_files++;
 		}
 		
@@ -137,7 +210,7 @@ int main(int argc, char *argv[])
 
 LogWriter::errorLogInitializer();
 
-FileTreeScanner obj("/home/anuj");
+FileTreeScanner obj("/home/anuj","/home/anuj");
 
 cout<<"\n__"<<obj.ScanFiles("/home/anuj");
 

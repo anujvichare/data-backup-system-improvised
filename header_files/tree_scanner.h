@@ -7,6 +7,7 @@
 #include<string.h>
 #include<unistd.h>
 #include<stdio.h>
+#include<errno.h>
 
 #include"log_writer.h"
 
