@@ -18,25 +18,9 @@ class FileTreeScanner
 
 	public:
 		//constructor
-		FileTreeScanner(const char* startRootDir, const char* startDestDir)
-		{	
-			string THISCLASSNAME = "FileTreeScanner";
-			objLogWriter.assignFileName(THISCLASSNAME);	
-	
-			sourceRootDir.assign(startRootDir);
-			tempPath.assign(startRootDir);
-	
-			destRootDir.assign(startDestDir);
-		}
-		FileTreeScanner(const char* startdir)
-		{
-					
-			string THISCLASSNAME = "FileTreeScanner";
-			objLogWriter.assignFileName(THISCLASSNAME);	
-	
-			sourceRootDir.assign(startdir);
-			tempPath.assign(startdir);
-		}
+		FileTreeScanner(const char*, const char*);
+		FileTreeScanner(const char*);
+
 		
 		//destructor
 		~FileTreeScanner(){}
@@ -44,6 +28,34 @@ class FileTreeScanner
 		int ScanFiles(string);
 
 };
+
+FileTreeScanner::FileTreeScanner(const char* startRootDir, const char* startDestDir)
+{	
+	string THISCLASSNAME = "FileTreeScanner";
+	objLogWriter.assignFileName(THISCLASSNAME);	
+	
+	sourceRootDir.assign(startRootDir);
+	tempPath.assign(startRootDir);
+	destRootDir.assign(startDestDir);
+}
+FileTreeScanner::FileTreeScanner(const char* startdir)
+{
+					
+	string THISCLASSNAME = "FileTreeScanner";
+	objLogWriter.assignFileName(THISCLASSNAME);	
+	
+	sourceRootDir.assign(startdir);
+	tempPath.assign(startdir);
+}
+
+///////////////////////////////////////////////////
+//
+//	name:		CheckSum()
+//	parameters:	2 const char*
+//	return value:	boolean
+//	purpose:	check the checksum of source and destination file
+//
+///////////////////////////////////////////////////
 
 bool FileTreeScanner::CheckSum(const char *sourceFilePath, const char *destinatioFilePath)
 {
@@ -70,6 +82,7 @@ bool FileTreeScanner::IsFileExist(const char *FilePath)
 	return false;
 }
 
+
 //////////////////////////////////////////////////////
 //
 //	name: 		ParsePath()
@@ -81,32 +94,39 @@ bool FileTreeScanner::IsFileExist(const char *FilePath)
 
 string FileTreeScanner::ParsePath(const char *PathToVerify)
 {
-//	char *PathToVerify = PathToVerify_const;
+
 	string objExistingPath = destRootDir;
 	string tempPath = destRootDir;
 	struct stat tempBuffer;		
 
-	char * tempStr;
-	strcpy(tempStr,PathToVerify);
-
-	char* tempDirName = strtok((&tempStr[0] + objExistingPath.length()),"/");
+	char *tempStr = new char[strlen(PathToVerify)];
+	memcpy(tempStr,PathToVerify,strlen(PathToVerify));
+	
+	char* tempDirName = strtok((&tempStr[0] + destRootDir.length()),"/");
 	
 	while(tempDirName != NULL)
 	{
+		
+
 		tempPath += "/";
 		tempPath += tempDirName;
 
 		if(lstat(tempPath.c_str(),&tempBuffer)<0)
 		{
 			if(errno == ENOENT)
+			{
+				objLogWriter.writeToLog("*-Dir Not Found-*"+tempPath);
 				break;
+			}
 		}
 		else if(S_ISDIR(tempBuffer.st_mode))
 		{
-			objExistingPath += tempPath;
+			objExistingPath = tempPath;
+
 		}
 		else
 		{
+			objLogWriter.writeToLog("*-Till File-*"+ tempPath);
 			break;
 		}
 
@@ -114,7 +134,7 @@ string FileTreeScanner::ParsePath(const char *PathToVerify)
 	}
 	
 	
-
+	delete[](tempStr);
 	return objExistingPath;
 }
 
@@ -166,7 +186,7 @@ int FileTreeScanner::ScanFiles(string tempPath)
 
 		if(S_ISDIR(stat_buf.st_mode))
 		{	
-			objLogWriter.writeToLog("--inside dir "+tempPath);
+			objLogWriter.writeToLog("*-inside dir-* "+tempPath);
 			ScanFiles(filepath);
 			
 
@@ -186,8 +206,8 @@ int FileTreeScanner::ScanFiles(string tempPath)
 			else
 			{
 				string tempStr = ParsePath(destFilePath.c_str());
-			//ToDO	
-				cout<<tempStr<<endl;
+				//ToDO	
+				cout<<"*-PP Ret Value-*"<<tempStr<<endl;
 			}
 			
 			//code to perform operation on files
@@ -210,12 +230,16 @@ int main(int argc, char *argv[])
 
 LogWriter::errorLogInitializer();
 
-FileTreeScanner obj("/home/anuj","/home/anuj");
+FileTreeScanner obj("/home/anuj","/media/anuj/New Volume/Ubuntu_Home_Same");
 
 cout<<"\n__"<<obj.ScanFiles("/home/anuj");
+
+//cout<<obj.ParsePath("/home/")<<endl;
+//cout<<obj.ParsePath("/home/anuj/xyz/abc")<<endl;
+//cout<<obj.ParsePath("/home/anuj/Resume/test.bash")<<endl;
 
 printf("\nno of file scanned %d \n",temp_no_of_files);
 return 0;
 }
 
-//////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
