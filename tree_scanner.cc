@@ -29,6 +29,11 @@ class FileTreeScanner
 
 };
 
+/////////////////////////////////////////////////
+//
+// 	Constructor definations
+//
+////////////////////////////////////////////////
 FileTreeScanner::FileTreeScanner(const char* startRootDir, const char* startDestDir)
 {	
 	string THISCLASSNAME = "FileTreeScanner";
@@ -38,6 +43,7 @@ FileTreeScanner::FileTreeScanner(const char* startRootDir, const char* startDest
 	tempPath.assign(startRootDir);
 	destRootDir.assign(startDestDir);
 }
+
 FileTreeScanner::FileTreeScanner(const char* startdir)
 {
 					
