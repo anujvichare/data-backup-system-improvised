@@ -1,12 +1,12 @@
 #makefile to build, clean and run a project
 
-DEP_HEADER =  header_files/log_writer.h header_files/tree_scanner.h header_files/pipe_requirments.h
+DEP_HEADER =  header_files/log_writer.h header_files/tree_scanner.h
 
 %.o: %.cc $(DEP_HEADER)
 	g++ -g -c -o $@ $<
 
-build: log_writer.o tree_scanner.o pipe_requirments.h
-	rm *.out
+build: log_writer.o tree_scanner.o
+	
 	g++ -g -o run.out log_writer.o tree_scanner.o
 	rm *.o
 clean: 
@@ -19,6 +19,7 @@ git-pull:
 	git pull origin master
 
 git-push:
+	rm *log *out
 	git push origin master
 
 usage: 
