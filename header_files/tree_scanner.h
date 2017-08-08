@@ -10,6 +10,7 @@
 #include<errno.h>
 
 #include"log_writer.h"
+#include"pipe_requirments.h"
 
 using namespace std;
 

@@ -5,7 +5,7 @@ class FileTreeScanner
 {
 	private:
 		
-		string sourceRootDir, destRootDir, tempPath;
+		string sourceRootDir, destRootDir; // tempPath;
 		int logFileFD;
 		
 		static string THISCLASSNAME;	
@@ -17,12 +17,9 @@ class FileTreeScanner
 		string ParsePath(const char*);
 
 	public:
-		//constructor
+		//constructor, destructor
 		FileTreeScanner(const char*, const char*);
 		FileTreeScanner(const char*);
-
-		
-		//destructor
 		~FileTreeScanner(){}
 
 		int ScanFiles(string);
@@ -40,7 +37,7 @@ FileTreeScanner::FileTreeScanner(const char* startRootDir, const char* startDest
 	objLogWriter.assignFileName(THISCLASSNAME);	
 	
 	sourceRootDir.assign(startRootDir);
-	tempPath.assign(startRootDir);
+//	tempPath.assign(startRootDir);
 	destRootDir.assign(startDestDir);
 }
 
@@ -51,7 +48,7 @@ FileTreeScanner::FileTreeScanner(const char* startdir)
 	objLogWriter.assignFileName(THISCLASSNAME);	
 	
 	sourceRootDir.assign(startdir);
-	tempPath.assign(startdir);
+//	tempPath.assign(startdir);
 }
 
 ///////////////////////////////////////////////////
@@ -66,7 +63,8 @@ FileTreeScanner::FileTreeScanner(const char* startdir)
 bool FileTreeScanner::CheckSum(const char *sourceFilePath, const char *destinatioFilePath)
 {
 
-	return true;
+	//todo add code of checksum of files
+	return false;
 }
 
 ////////////////////////////////////////////////////
@@ -117,12 +115,17 @@ string FileTreeScanner::ParsePath(const char *PathToVerify)
 		tempPath += "/";
 		tempPath += tempDirName;
 
-		if(lstat(tempPath.c_str(),&tempBuffer)<0)
+		if(lstat(tempPath.c_str(),&tempBuffer)<0) //open file or directory inode
 		{
-			if(errno == ENOENT)
+			if(errno == ENOENT) //if file of directory does not exist
 			{
 				objLogWriter.writeToLog("*-Dir Not Found-*"+tempPath);
 				break;
+			}
+			else
+			{
+				perror("ParsePath: error in File or directory reading");
+				return (objExistingPath = "-1");
 			}
 		}
 		else if(S_ISDIR(tempBuffer.st_mode))
@@ -141,7 +144,7 @@ string FileTreeScanner::ParsePath(const char *PathToVerify)
 	
 	
 	delete[](tempStr);
-	return objExistingPath;
+	return objExistingPath;  //returns builded path
 }
 
 
@@ -172,12 +175,12 @@ int FileTreeScanner::ScanFiles(string tempPath)
 
 	while((dirEntry = readdir(dir))!= 0 )
 	{	
-		if( dirEntry -> d_name[0] == '.')
+		if( dirEntry -> d_name[0] == '.' && (dirEntry->d_name[1] == '.' || dirEntry ->d_name[1] == '\0'))
 		{
-			//strcpy(filepath,tempPath);
+			//cout<<dirEntry->d_name<<":"<<tempPath<<endl;
 			continue;
 		}
-		
+
 		filepath += "/";	
 		filepath +=  dirEntry->d_name;
 
@@ -192,7 +195,7 @@ int FileTreeScanner::ScanFiles(string tempPath)
 
 		if(S_ISDIR(stat_buf.st_mode))
 		{	
-			objLogWriter.writeToLog("*-inside dir-* "+tempPath);
+			//objLogWriter.writeToLog("*-inside dir-* "+tempPath);
 			ScanFiles(filepath);
 			
 
@@ -200,19 +203,54 @@ int FileTreeScanner::ScanFiles(string tempPath)
 		else
 		{
 			
-			objLogWriter.writeToLog(filepath);
+			//objLogWriter.writeToLog("fullFilePath"+filepath);
 			
 			destFilePath = filepath;
 			destFilePath.replace(0,sourceRootDir.length(),destRootDir.c_str());
 			
+			DataInPipe objDataInPipe;
+			
+
 			if(IsFileExist(destFilePath.c_str()))
 			{
-				//call for checksum
+				//call for checksum()
+				if(!(CheckSum(filepath.c_str(),destFilePath.c_str())))
+				{
+					objDataInPipe.SourceFilePath = filepath; 
+					objDataInPipe.DestFilePath = destFilePath;
+					objDataInPipe.existPath = "";
+					objDataInPipe.copymode = OVERWRITEFILE;
+
+					//write to pipe
+				
+				}
+				else
+				{
+					objLogWriter.writeToLog(filepath+": File Not Modified");
+				}
 			}
 			else
 			{
 				string tempStr = ParsePath(destFilePath.c_str());
-				//ToDO	
+				if((tempStr.compare(tempPath.c_str())) == 0)
+				{
+					objDataInPipe.SourceFilePath = filepath; 
+					objDataInPipe.DestFilePath = destFilePath;
+					objDataInPipe.existPath = "";
+					objDataInPipe.copymode = COPYONLYFILE;
+
+					//write to pipe
+				}
+				else
+				{
+					objDataInPipe.SourceFilePath = filepath; 
+					objDataInPipe.DestFilePath = destFilePath;
+					objDataInPipe.existPath = tempStr;
+					objDataInPipe.copymode = COPYWITHDIRSTRUCTURE;
+
+					//write to pipe
+				}
+					
 				cout<<"*-PP Ret Value-*"<<tempStr<<endl;
 			}
 			
@@ -223,10 +261,10 @@ int FileTreeScanner::ScanFiles(string tempPath)
 		
 		filepath = tempPath;
 
-	}
+		}
 
 		closedir(dir);
-return 0;
+		return 0;
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -238,7 +276,7 @@ LogWriter::errorLogInitializer();
 
 FileTreeScanner obj("/home/anuj","/media/anuj/New Volume/Ubuntu_Home_Same");
 
-cout<<"\n__"<<obj.ScanFiles("/home/anuj");
+cout<<"\n__"<<obj.ScanFiles("/home/anuj/");
 
 //cout<<obj.ParsePath("/home/")<<endl;
 //cout<<obj.ParsePath("/home/anuj/xyz/abc")<<endl;
