@@ -5,9 +5,9 @@ DEP_HEADER =  header_files/log_writer.h header_files/tree_scanner.h
 %.o: %.cc $(DEP_HEADER)
 	g++ -g -c -o $@ $<
 
-build: log_writer.o tree_scanner.o
+build: log_writer.o tree_scanner.o main.o
 	
-	g++ -g -o run.out log_writer.o tree_scanner.o
+	g++ -g -o run.out log_writer.o tree_scanner.o main.o
 	rm *.o
 clean: 
 	rm *log *out

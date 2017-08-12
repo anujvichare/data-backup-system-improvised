@@ -1,31 +1,5 @@
 #include"header_files/tree_scanner.h"
 
-
-class FileTreeScanner
-{
-	private:
-		
-		string sourceRootDir, destRootDir; // tempPath;
-		int logFileFD;
-		
-		static string THISCLASSNAME;	
-		LogWriter objLogWriter;		
-		
-		//private member functions
-		bool CheckSum(const char*,const char*);
-		bool IsFileExist(const char*);
-		string ParsePath(const char*);
-
-	public:
-		//constructor, destructor
-		FileTreeScanner(const char*, const char*);
-		FileTreeScanner(const char*);
-		~FileTreeScanner(){}
-
-		int ScanFiles(string);
-
-};
-
 /////////////////////////////////////////////////
 //
 // 	Constructor definations
@@ -37,7 +11,6 @@ FileTreeScanner::FileTreeScanner(const char* startRootDir, const char* startDest
 	objLogWriter.assignFileName(THISCLASSNAME);	
 	
 	sourceRootDir.assign(startRootDir);
-//	tempPath.assign(startRootDir);
 	destRootDir.assign(startDestDir);
 }
 
@@ -48,7 +21,7 @@ FileTreeScanner::FileTreeScanner(const char* startdir)
 	objLogWriter.assignFileName(THISCLASSNAME);	
 	
 	sourceRootDir.assign(startdir);
-//	tempPath.assign(startdir);
+
 }
 
 ///////////////////////////////////////////////////
@@ -78,7 +51,7 @@ bool FileTreeScanner::CheckSum(const char *sourceFilePath, const char *destinati
 
 bool FileTreeScanner::IsFileExist(const char *FilePath)
 {
-	if(access(FilePath, F_OK) != -1)
+	if(access(FilePath, F_OK) == 0)
 	{
 		return true;
 	}
@@ -115,16 +88,17 @@ string FileTreeScanner::ParsePath(const char *PathToVerify)
 		tempPath += "/";
 		tempPath += tempDirName;
 
-		if(lstat(tempPath.c_str(),&tempBuffer)<0) //open file or directory inode
+		if(lstat(tempPath.c_str(),&tempBuffer)<0) //open file's or directory's inode
 		{
 			if(errno == ENOENT) //if file of directory does not exist
 			{
-				objLogWriter.writeToLog("*-Dir Not Found-*"+tempPath);
+			//	objLogWriter.writeToLog("*-Dir Not Found-*"+objExistingPath);
 				break;
 			}
 			else
 			{
 				perror("ParsePath: error in File or directory reading");
+				perror(objExistingPath.c_str());
 				return (objExistingPath = "-1");
 			}
 		}
@@ -175,7 +149,7 @@ int FileTreeScanner::ScanFiles(string tempPath)
 
 	while((dirEntry = readdir(dir))!= 0 )
 	{	
-		if( dirEntry -> d_name[0] == '.' && (dirEntry->d_name[1] == '.' || dirEntry ->d_name[1] == '\0'))
+		if( dirEntry -> d_name[0] == '.' ) //&& (dirEntry->d_name[1] == '.'|| dirEntry ->d_name[1] == '\0'))
 		{
 			//cout<<dirEntry->d_name<<":"<<tempPath<<endl;
 			continue;
@@ -195,15 +169,11 @@ int FileTreeScanner::ScanFiles(string tempPath)
 
 		if(S_ISDIR(stat_buf.st_mode))
 		{	
-			//objLogWriter.writeToLog("*-inside dir-* "+tempPath);
-			ScanFiles(filepath);
+			ScanFiles(filepath); //ecursive call to ScanFile again
 			
-
 		}
 		else
 		{
-			
-			//objLogWriter.writeToLog("fullFilePath"+filepath);
 			
 			destFilePath = filepath;
 			destFilePath.replace(0,sourceRootDir.length(),destRootDir.c_str());
@@ -213,49 +183,62 @@ int FileTreeScanner::ScanFiles(string tempPath)
 
 			if(IsFileExist(destFilePath.c_str()))
 			{
-				//call for checksum()
-				if(!(CheckSum(filepath.c_str(),destFilePath.c_str())))
+				
+				if(!(CheckSum(filepath.c_str(),destFilePath.c_str())))   //checksum call
 				{
-					objDataInPipe.SourceFilePath = filepath; 
-					objDataInPipe.DestFilePath = destFilePath;
-					objDataInPipe.existPath = "";
+					
+					strcpy(objDataInPipe.SourceFilePath, filepath.c_str()); 
+					strcpy(objDataInPipe.DestFilePath,destFilePath.c_str());
+					strcpy(objDataInPipe.existPath, "");
 					objDataInPipe.copymode = OVERWRITEFILE;
 
 					//write to pipe
+			
+					objLogWriter.writeToLog("File Modified : "+ filepath);
 				
 				}
 				else
 				{
-					objLogWriter.writeToLog(filepath+": File Not Modified");
+					objLogWriter.writeToLog("File Not Modified : " + filepath);
 				}
 			}
 			else
 			{
-				string tempStr = ParsePath(destFilePath.c_str());
-				if((tempStr.compare(tempPath.c_str())) == 0)
+				string tempStr = ParsePath(destFilePath.c_str()); //Parse Path
+				
+				string tempDestPath =  tempStr;
+				tempDestPath.replace(0,destRootDir.length(),"");
+				string tempSourcePath = tempPath;
+				tempSourcePath.replace(0,sourceRootDir.length(),"");
+				//cout<<tempSourcePath<<" : "<<tempDestPath<<endl;
+				
+				if((tempDestPath.compare(tempSourcePath.c_str())) == 0)
 				{
-					objDataInPipe.SourceFilePath = filepath; 
-					objDataInPipe.DestFilePath = destFilePath;
-					objDataInPipe.existPath = "";
+					strcpy(objDataInPipe.SourceFilePath, filepath.c_str()); 
+					strcpy(objDataInPipe.DestFilePath,destFilePath.c_str());
+					strcpy(objDataInPipe.existPath,"");
 					objDataInPipe.copymode = COPYONLYFILE;
 
 					//write to pipe
+
+					objLogWriter.writeToLog("Path Exists till parrent dir : " + tempStr);
+					objLogWriter.writeToLog("  +-- " + filepath);
 				}
 				else
 				{
-					objDataInPipe.SourceFilePath = filepath; 
-					objDataInPipe.DestFilePath = destFilePath;
-					objDataInPipe.existPath = tempStr;
+					strcpy(objDataInPipe.SourceFilePath, filepath.c_str()); 
+					strcpy(objDataInPipe.DestFilePath,destFilePath.c_str());
+					strcpy(objDataInPipe.existPath,tempStr.c_str());
 					objDataInPipe.copymode = COPYWITHDIRSTRUCTURE;
 
 					//write to pipe
+
+					objLogWriter.writeToLog("Path Exists till dir : " + tempStr);
+					objLogWriter.writeToLog("  +-- " + filepath);
 				}
 					
-				cout<<"*-PP Ret Value-*"<<tempStr<<endl;
 			}
 			
-			//code to perform operation on files
-
 			temp_no_of_files++;
 		}
 		
@@ -264,26 +247,27 @@ int FileTreeScanner::ScanFiles(string tempPath)
 		}
 
 		closedir(dir);
-		return 0;
+	return 0;
 }
 
-/////////////////////////////////////////////////////////////////////
-
-int main(int argc, char *argv[])
+int FileTreeScanner::startScanning()
 {
 
-LogWriter::errorLogInitializer();
+	ScanFiles(sourceRootDir);
+	
+//	cout<<"completed na mhane!";
+	
+	DataInPipe objDataInPipe;	
+	strcpy(objDataInPipe.SourceFilePath,""); 
+	strcpy(objDataInPipe.DestFilePath,"");
+	strcpy(objDataInPipe.existPath,"");
+	objDataInPipe.copymode = SCANCOMPLETE;
 
-FileTreeScanner obj("/home/anuj","/media/anuj/New Volume/Ubuntu_Home_Same");
-
-cout<<"\n__"<<obj.ScanFiles("/home/anuj/");
-
-//cout<<obj.ParsePath("/home/")<<endl;
-//cout<<obj.ParsePath("/home/anuj/xyz/abc")<<endl;
-//cout<<obj.ParsePath("/home/anuj/Resume/test.bash")<<endl;
-
-printf("\nno of file scanned %d \n",temp_no_of_files);
-return 0;
+	
+	
+	return 0;
 }
 
-/////////////////////////////////////////////////////////////////////
+
+
+
