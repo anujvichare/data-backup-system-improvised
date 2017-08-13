@@ -19,7 +19,6 @@ git-pull:
 	git pull origin master
 
 git-push:
-	rm *log *out
 	git push origin master
 
 usage: 

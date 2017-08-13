@@ -1,4 +1,5 @@
 #include"header_files/data_copy.h"
+#include<errno.h>
 
 
 DataCopy::DataCopy(const char* startRootDir, const char* startDestDir)
@@ -14,15 +15,16 @@ DataCopy::~DataCopy()
 int DataCopy::createDirStructure()
 {
 	struct stat statBuf, sourceStatBuf;
+	DataInPipe tempObj = objReadDataFromPipe;
 	string tempPath = objReadDataFromPipe.existPath;
 	string tempSourcePath = tempPath;
 	tempSourcePath.replace(0,destRootDir.length(),sourceRootDir.c_str());
-
+	
 	int tempPathLength = tempPath.length();
 	
-	char *remainingPath = new char[strlen(objReadDataFromPipe.DestFilePath) - tempPathLength];
+	char *remainingPath = new char[strlen(tempObj.DestFilePath) - tempPathLength];
 	
-	remainingPath = strtok(&objReadDataFromPipe.DestFilePath[0] + tempPathLength,"/");
+	remainingPath = strtok(&tempObj.DestFilePath[0] + tempPathLength,"/");
 	
 	while(remainingPath != NULL)
 	{		
@@ -31,13 +33,24 @@ int DataCopy::createDirStructure()
 		tempSourcePath += remainingPath;
 		tempPath += remainingPath;
 		
-		if(lstat(tempPath.c_str(), &statBuf) == -1)
+			
+		int status = lstat(tempPath.c_str(), &statBuf); 		
+		if((status == -1 && errno == EIO)  || !(S_ISDIR(statBuf.st_mode)))
 		{
-			if(lstat(tempSourcePath.c_str(), &sourceStatBuf))
-			{
-				if(S_ISDIR(sourceStatBuf.st_mode))				
-					mkdir(tempPath.c_str(),sourceStatBuf.st_mode); 
-			}
+				
+				if(lstat(tempSourcePath.c_str(), &sourceStatBuf) == 0)
+				{
+					if(S_ISDIR(sourceStatBuf.st_mode))				
+					{
+						if(mkdir(tempPath.c_str(),0777) != 0) //sourceStatBuf.st_mode); 
+						{
+							cout<<errno;
+							perror("mkdir error ");
+							return -1;
+						}
+					}
+				}
+			
 		}
 		
 		remainingPath = strtok(NULL,"/");
@@ -90,8 +103,8 @@ int DataCopy::startDataCopy()
 	int runFlag = YETTOCOMPLETE;
 
 	
-	do
-	{
+//	do
+//	{
 		//read data from pipe
 		strcpy(objReadDataFromPipe.SourceFilePath,"/home/anuj/test/test1/test2/abc");
 		strcpy(objReadDataFromPipe.DestFilePath,"/media/anuj/New Volume/Ubuntu_Home_Same/test/test1/test2/abc");
@@ -134,11 +147,7 @@ int DataCopy::startDataCopy()
 							break;
 		}
 			
-		strcpy(objReadDataFromPipe.SourceFilePath,"/home/anuj/test/test1/test2/abc");
-		strcpy(objReadDataFromPipe.DestFilePath,"/media/anuj/New Volume/Ubuntu_Home_Same/test/test1/test2/abc");
-		strcpy(objReadDataFromPipe.existPath,"/media/anuj/New Volume/Ubuntu_Home_Same");
-		objReadDataFromPipe.copymode = SCANCOMPLETE;		
-	}while(runFlag != COMPLETE);
+//}while(runFlag != COMPLETE);
 	
 	return 0;	
 }
