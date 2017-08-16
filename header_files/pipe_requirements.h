@@ -28,5 +28,7 @@ typedef struct DataInPipe
 	int copymode;
 } DataInPipe;
 
+#define PIPEDATASIZE sizeof(DataInPipe)
+
 #endif
 

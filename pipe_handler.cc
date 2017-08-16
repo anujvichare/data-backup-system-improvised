@@ -25,7 +25,7 @@ PipeHandler::PipeHandler()
 	if((retValue = pipe(fd) < 0)
 	{
 		
-		perror("Unable to create Pipe: existing...");
+		perror("Unable to create Pipe: exiting...");
 		exit(0);
 	}
 
@@ -50,8 +50,16 @@ PipeHandler* PipeHandler::instance()
 
 int readFromPipe(DataInPipe &data)
 {
-	char Buffer[sizeof(DataInPipe)];
+	char Buffer[PIPEDATASIZE];
+	int readChars = read(readerDescriptor, Buffer, PIPEDATASIZE);
 	
+	if(readChars > 0)
+	{	
+		memcpy(data.SourceFilePath, Buffer+4, 500);
+		
+	}	
+	
+	return readChars;
 }
 
 
