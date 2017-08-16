@@ -45,7 +45,7 @@ int DataCopy::createDirStructure()
 						if(mkdir(tempPath.c_str(),0777) != 0) //sourceStatBuf.st_mode); 
 						{
 							cout<<errno;
-							perror("mkdir error ");
+							perror("Cannot create directory: ");
 							return -1;
 						}
 					}
@@ -109,13 +109,13 @@ int DataCopy::startDataCopy()
 		strcpy(objReadDataFromPipe.SourceFilePath,"/home/anuj/test/test1/test2/abc");
 		strcpy(objReadDataFromPipe.DestFilePath,"/media/anuj/New Volume/Ubuntu_Home_Same/test/test1/test2/abc");
 		strcpy(objReadDataFromPipe.existPath,"/media/anuj/New Volume/Ubuntu_Home_Same");
-		objReadDataFromPipe.copymode = COPYWITHDIRSTRUCTURE;
+		objReadDataFromPipe.copymode = SCANCOMPLETE;//OVERWRITEFILE;//COPYONLYFILE; //COPYWITHDIRSTRUCTURE;
 		
-//cout<<objReadDataFromPipe;
+
 	
 		switch(objReadDataFromPipe.copymode)
 		{
-			case COPYWITHDIRSTRUCTURE :
+			case COPYWITHDIRSTRUCTURE : cout<<"COPYWITHDIRSTRUCTURE";
 							if(createDirStructure() == 0)
 							{
 								if(copyFileData() != 0)
@@ -129,21 +129,25 @@ int DataCopy::startDataCopy()
 							}
 							
 							break;
-			case COPYONLYFILE : 
+			case COPYONLYFILE : cout<<"COPYONLYFILE";
+ 
 							if(copyFileData() != 0)	
 							{
 								objLogWriter.writeToLog("Error : copying data in file");
 							}
 							break;
 
-			case OVERWRITEFILE :
+			case OVERWRITEFILE : cout<<"OVERWITEFILE";
+
 							if(copyFileData() != 0)	
 							{
 								objLogWriter.writeToLog("Error : copying data in file");
 							}
 							break;
 
-			case SCANCOMPLETE :		runFlag = COMPLETE;
+			case SCANCOMPLETE :  cout<<"SCANCOMPLETE";
+
+						runFlag = COMPLETE;
 							break;
 		}
 			
