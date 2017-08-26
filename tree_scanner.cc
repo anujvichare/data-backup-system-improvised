@@ -191,8 +191,9 @@ int FileTreeScanner::ScanFiles(string tempPath)
 					strcpy(objDataInPipe.DestFilePath,destFilePath.c_str());
 					strcpy(objDataInPipe.existPath, "");
 					objDataInPipe.copymode = OVERWRITEFILE;
-
-					//write to pipe
+//write(1,&objDataInPipe,1501);
+//cout<<"=========================================================================="<<endl;
+					PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
 			
 					objLogWriter.writeToLog("File Modified : "+ filepath);
 				
@@ -218,8 +219,9 @@ int FileTreeScanner::ScanFiles(string tempPath)
 					strcpy(objDataInPipe.DestFilePath,destFilePath.c_str());
 					strcpy(objDataInPipe.existPath,"");
 					objDataInPipe.copymode = COPYONLYFILE;
-
-					//write to pipe
+//write(1,&objDataInPipe,1501);
+//cout<<"=========================================================================="<<endl;
+					PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
 
 					objLogWriter.writeToLog("Path Exists till parrent dir : " + tempStr);
 					objLogWriter.writeToLog("  +-- " + filepath);
@@ -230,8 +232,9 @@ int FileTreeScanner::ScanFiles(string tempPath)
 					strcpy(objDataInPipe.DestFilePath,destFilePath.c_str());
 					strcpy(objDataInPipe.existPath,tempStr.c_str());
 					objDataInPipe.copymode = COPYWITHDIRSTRUCTURE;
-
-					//write to pipe
+//write(1,&objDataInPipe,1501);
+//cout<<"=========================================================================="<<endl;
+					PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
 
 					objLogWriter.writeToLog("Path Exists till dir : " + tempStr);
 					objLogWriter.writeToLog("  +-- " + filepath);
@@ -255,14 +258,12 @@ int FileTreeScanner::startScanning()
 
 	ScanFiles(sourceRootDir);
 	
-//	cout<<"completed na mhane!";
-	
 	DataInPipe objDataInPipe;	
 	strcpy(objDataInPipe.SourceFilePath,""); 
 	strcpy(objDataInPipe.DestFilePath,"");
 	strcpy(objDataInPipe.existPath,"");
 	objDataInPipe.copymode = SCANCOMPLETE;
-
+	PipeHandler::instance()->writeToPipe(objDataInPipe);
 	
 	
 	return 0;
