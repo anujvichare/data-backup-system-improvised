@@ -35,7 +35,7 @@ int DataCopy::createDirStructure()
 		
 			
 		int status = lstat(tempPath.c_str(), &statBuf); 		
-		if((status == -1 && errno == EIO)  || !(S_ISDIR(statBuf.st_mode)))
+		if((status == -1 && errno == ENOENT)  || !(S_ISDIR(statBuf.st_mode)))
 		{
 				
 				if(lstat(tempSourcePath.c_str(), &sourceStatBuf) == 0)
@@ -107,11 +107,6 @@ int DataCopy::startDataCopy()
 	
 	do
 	{
-		//read data from pipe
-		/*strcpy(objReadDataFromPipe.SourceFilePath,"/home/anuj/test/test1/test2/abc");
-		strcpy(objReadDataFromPipe.DestFilePath,"/media/anuj/New Volume/Ubuntu_Home_Same/test/test1/test2/abc");
-		strcpy(objReadDataFromPipe.existPath,"/media/anuj/New Volume/Ubuntu_Home_Same");
-		objReadDataFromPipe.copymode = SCANCOMPLETE;//OVERWRITEFILE;//COPYONLYFILE; //COPYWITHDIRSTRUCTURE;*/
 		objReadDataFromPipe = EmptyStruct;
 		int charsRead = PipeHandler::instance()->readFromPipe(objReadDataFromPipe);
 		if(charsRead == -1)
@@ -119,12 +114,10 @@ int DataCopy::startDataCopy()
 			usleep(10000);
 			continue;
 		}
-//cout<<"++++++++++++++++++++++++++++++"<<endl;
-//write(1,&objReadDataFromPipe,1501);
-	
+
 		switch(objReadDataFromPipe.copymode)
 		{
-			case COPYWITHDIRSTRUCTURE : //cout<<"COPYWITHDIRSTRUCTURE";
+			case COPYWITHDIRSTRUCTURE : //cout<<"COPYWITHDIRSTRUCTURE"<<endl;
 							if(createDirStructure() == 0)
 							{
 								if(copyFileData() != 0)
@@ -138,7 +131,7 @@ int DataCopy::startDataCopy()
 							}
 							
 							break;
-			case COPYONLYFILE : //cout<<"COPYONLYFILE";
+			case COPYONLYFILE : //cout<<"COPYONLYFILE"<<endl;
  
 							if(copyFileData() != 0)	
 							{
@@ -146,7 +139,7 @@ int DataCopy::startDataCopy()
 							}
 							break;
 
-			case OVERWRITEFILE : //cout<<"OVERWITEFILE";
+			case OVERWRITEFILE : //cout<<"OVERWITEFILE"<<endl;
 
 							if(copyFileData() != 0)	
 							{
@@ -154,7 +147,7 @@ int DataCopy::startDataCopy()
 							}
 							break;
 
-			case SCANCOMPLETE :  //cout<<"SCANCOMPLETE";
+			case SCANCOMPLETE :  //cout<<"SCANCOMPLETE"<<endl;
 
 						runFlag = COMPLETE;
 							break;

@@ -43,20 +43,43 @@ int PipeHandler::readFromPipe(DataInPipe &data)
 	
 	if(readChars > 0)
 	{	
-		memcpy(data.SourceFilePath, Buffer+1, 500);
+		strcpy(data.SourceFilePath, Buffer+1);
+		strcpy(data.DestFilePath, Buffer+501);
+		strcpy(data.existPath, Buffer+1001);
+		
+		/*memcpy(data.SourceFilePath, Buffer+1, 500);
 		memcpy(data.DestFilePath, Buffer+501, 500);
-		memcpy(data.existPath, Buffer+1001, 500);
-		data.copymode = Buffer[0];		
+		memcpy(data.existPath, Buffer+1001, 500);*/
+		data.copymode = Buffer[0];
+
+/*	cout<<"-----------------------------------------"<<endl;
+
+	cout<<data.copymode<<endl;
+	cout<<data.SourceFilePath<<endl;
+	cout<<data.DestFilePath<<endl;
+	cout<<data.existPath<<endl;
+
+	cout<<"========================================="<<endl;
+*/		
 	}
 	else{cout<<errno<<endl;}	
-	
+
 	return readChars;
 }
 
 int PipeHandler::writeToPipe(DataInPipe &data)
 {
 	int writtenChars = write(writerDescriptor, &data, PIPEDATASIZE);
-	
+/*	
+	cout<<"-----------------------------------------"<<endl;
+
+	cout<<data.copymode<<endl;
+	cout<<data.SourceFilePath<<endl;
+	cout<<data.DestFilePath<<endl;
+	cout<<data.existPath<<endl;
+
+	cout<<"========================================="<<endl;
+*/	
 	return writtenChars;
 }
 

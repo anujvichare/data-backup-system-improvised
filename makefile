@@ -19,11 +19,14 @@ git-pull:
 	git pull origin master
 
 git-push:
+	rm *log *out
+	git add .
+	git commit -m ${args}
 	git push origin master
 
 usage: 
 	@echo "make build <enter> (is to build the project) \n"
 	@echo "make clean <enter> (is to clean all logs and executables) \n"
 	@echo "make git-pull <enter> (is to pull from master branch Github repo.) \n"
-	@echo "make git-push <enter> (is to push work on GitHub repo on master branch) \n"
+	@echo "make args="comment" git-push <enter> (is to push work on GitHub repo on master branch) \n"
 
