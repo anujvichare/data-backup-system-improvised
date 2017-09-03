@@ -19,7 +19,14 @@ git-pull:
 	git pull origin master
 
 git-push:
-	rm *log *out
+	count=`ls -l *log 2>/dev/null | wc -l`; \
+	if [ $$count -ne 0 ]; then \
+	   rm *log; \
+	fi
+	count=`ls -l *out 2>/dev/null | wc -l` \
+	if [ $$count != 0 ]; then \
+	   rm *out; \
+	fi
 	git add .
 	git commit -m "${comment}"
 	git push origin master
