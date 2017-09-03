@@ -23,7 +23,7 @@ git-push:
 	if [ $$count -ne 0 ]; then \
 	   rm *log; \
 	fi
-	count=`ls -l *out 2>/dev/null | wc -l` \
+	count=`ls -l *out 2>/dev/null | wc -l`; \
 	if [ $$count != 0 ]; then \
 	   rm *out; \
 	fi
