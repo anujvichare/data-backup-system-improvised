@@ -1,3 +1,9 @@
+///////////////////////////////////////
+//
+//  header file for data copy class
+//
+//////////////////////////////////////
+
 #ifndef DATA_COPY_H
 #define DATA_COPY_H
 
@@ -13,9 +19,11 @@
 
 using namespace std;
 
+
 #define COMPLETE 0
 #define YETTOCOMPLETE 1
 
+//class defination
 class DataCopy
 {
 

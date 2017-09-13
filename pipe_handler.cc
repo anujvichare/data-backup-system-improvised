@@ -1,5 +1,16 @@
+///////////////////////////////////////////////////
+//
+//	file contains functions for pipe handeling
+//
+//////////////////////////////////////////////////
+
 #include"header_files/pipe_requirements.h"
 
+////////////////////////////////
+//
+// 	constructors and destructors
+//
+///////////////////////////////
 
 PipeHandler::PipeHandler()
 {
@@ -27,6 +38,15 @@ PipeHandler::~PipeHandler()
 	close(writerDescriptor);
 }
 
+/////////////////////////////////////////////////////////
+//
+//	name:		instance()
+//	parameters:	null
+//	return value:	Pipehandler*
+//	purpose:	factory method to return instance of a singleton class
+//
+//////////////////////////////////////////////////////////
+
 PipeHandler *PipeHandler::pipeHandler;
 PipeHandler* PipeHandler::instance()
 {
@@ -35,6 +55,15 @@ PipeHandler* PipeHandler::instance()
 	
 	return pipeHandler;
 }
+
+/////////////////////////////////////////////////////////
+//
+//	name:		readFromPipe()
+//	parameters:	null
+//	return value:	int (read character count if success / return value of read())
+//	purpose:	read data chunk from pipe
+//
+//////////////////////////////////////////////////////////
 
 int PipeHandler::readFromPipe(DataInPipe &data)
 {
@@ -66,6 +95,15 @@ int PipeHandler::readFromPipe(DataInPipe &data)
 
 	return readChars;
 }
+
+/////////////////////////////////////////////////////////
+//
+//	name:		writeToPipe()
+//	parameters:	DataInPipe &
+//	return value:	int (return value of write())
+//	purpose:	write data chunk to file
+//
+//////////////////////////////////////////////////////////
 
 int PipeHandler::writeToPipe(DataInPipe &data)
 {

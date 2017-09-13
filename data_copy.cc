@@ -1,7 +1,18 @@
+///////////////////////////////////////////////////////////////
+//
+//  this file contains function definations of data copy class 
+//
+///////////////////////////////////////////////////////////////
+
+
 #include"header_files/data_copy.h"
 #include<errno.h>
 
-
+///////////////////////////////////////////////////
+//
+//   	Constructor definations
+//
+////////////////////////////////////////////////////
 DataCopy::DataCopy(const char* startRootDir, const char* startDestDir)
 {
 	THISCLASSNAME = "DataCopy";		
@@ -11,6 +22,15 @@ DataCopy::DataCopy(const char* startRootDir, const char* startDestDir)
 }
 DataCopy::~DataCopy()
 {}
+
+/////////////////////////////////////////////////////
+//
+// 	name:		createDirStructure()
+//	parameters: 	null
+//	return value:	int (0 if success / -1 if fails)
+//	purpose: 	create missing directry structure to copy or overwrite a file.
+//
+/////////////////////////////////////////////////////
 
 int DataCopy::createDirStructure()
 {
@@ -61,6 +81,15 @@ int DataCopy::createDirStructure()
 return 0;	
 }
 
+
+/////////////////////////////////////////////////////////
+//
+//	name:		copyFileData()
+//	parameters:	null
+//	return value:	int (0 if success / -1 if fails)
+//	purpose:	copies data in file to destination
+//
+//////////////////////////////////////////////////////////
 int DataCopy::copyFileData()
 {
 	char *sourceFileName = objReadDataFromPipe.SourceFilePath;
@@ -99,6 +128,15 @@ int DataCopy::copyFileData()
   
 return 0;
 }
+
+/////////////////////////////////////////////////////////
+//
+//	name:		startDataCopy()
+//	parameters:	null
+//	return value:	int (0 if success / -1 if fails)
+//	purpose:	start copying data read from pipe 
+//
+//////////////////////////////////////////////////////////
 
 int DataCopy::startDataCopy()
 {	
