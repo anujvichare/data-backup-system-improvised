@@ -1,16 +1,16 @@
-///////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 //
 //	file contains functions for pipe handeling
 //
-//////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
 
 #include"header_files/pipe_requirements.h"
 
-////////////////////////////////
+///////////////////////////////////////////////////////////
 //
 // 	constructors and destructors
 //
-///////////////////////////////
+//////////////////////////////////////////////////////////
 
 PipeHandler::PipeHandler()
 {
@@ -36,6 +36,7 @@ PipeHandler::~PipeHandler()
 {
 	close(readerDescriptor);
 	close(writerDescriptor);
+	objLogWriter.writeToLog("pipe closed");
 }
 
 /////////////////////////////////////////////////////////
@@ -51,8 +52,10 @@ PipeHandler *PipeHandler::pipeHandler;
 PipeHandler* PipeHandler::instance()
 {
 	if(!pipeHandler)
+	{
 		pipeHandler = new PipeHandler();
-	
+		cout<<"pipe initialization..";
+	}
 	return pipeHandler;
 }
 
@@ -91,7 +94,11 @@ int PipeHandler::readFromPipe(DataInPipe &data)
 	cout<<"========================================="<<endl;
 */		
 	}
-	else{cout<<errno<<endl;}	
+	else{
+		
+		objLogWriter.writeToLog("error occured in pipe reading with error: "+ std::to_string(errno));
+		cout<<"reading :"<<errno<<endl;
+		}	
 
 	return readChars;
 }
@@ -108,16 +115,42 @@ int PipeHandler::readFromPipe(DataInPipe &data)
 int PipeHandler::writeToPipe(DataInPipe &data)
 {
 	int writtenChars = write(writerDescriptor, &data, PIPEDATASIZE);
-/*	
-	cout<<"-----------------------------------------"<<endl;
+	if(writtenChars > 0)	
+	{
+		/*	
 
-	cout<<data.copymode<<endl;
-	cout<<data.SourceFilePath<<endl;
-	cout<<data.DestFilePath<<endl;
-	cout<<data.existPath<<endl;
+		cout<<"-----------------------------------------"<<endl;
 
-	cout<<"========================================="<<endl;
-*/	
+		cout<<data.copymode<<endl;
+		cout<<data.SourceFilePath<<endl;
+		cout<<data.DestFilePath<<endl;
+		cout<<data.existPath<<endl;
+
+		cout<<"========================================="<<endl;
+		*/	
+	}
+	if(writtenChars == 0)
+	{
+
+		objLogWriter.writeToLog("did not write in pipe");
+
+			//objLogWriter.writeToLog(data.copymode);
+			objLogWriter.writeToLog(data.SourceFilePath);
+			objLogWriter.writeToLog(data.DestFilePath);
+			objLogWriter.writeToLog(data.existPath);
+
+
+		objLogWriter.writeToLog("----------------");
+		
+	}
+	else if(writtenChars < 0)
+	{
+
+		objLogWriter.writeToLog("error occured while writing in pipe: "+ std::to_string(errno) );
+		cout<<"writing :"<<errno<<endl;
+	}		
+	
+	objLogWriter.writeToLog("writtenChars"+ std::to_string(writtenChars));
 	return writtenChars;
 }
 

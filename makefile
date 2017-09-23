@@ -3,11 +3,11 @@
 DEP_HEADER =  header_files/log_writer.h header_files/tree_scanner.h header_files/data_copy.h header_files/pipe_requirements.h
 
 %.o: %.cc $(DEP_HEADER)
-	g++ -g -c -o $@ $<
+	g++ -std=c++11 -g -c -o $@ $<
 
 build: log_writer.o tree_scanner.o main.o data_copy.o pipe_handler.o
 	
-	g++ -g -o run.out log_writer.o tree_scanner.o data_copy.o pipe_handler.o main.o
+	g++ -std=c++11 -g -o run.out log_writer.o tree_scanner.o data_copy.o pipe_handler.o main.o
 	rm *.o
 clean: 
 	rm *log *out

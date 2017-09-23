@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[])
 {
-string source="/home/anuj/PROGS/LSP";
+string source="/home/anuj/PROGS/LSP/Marvellous Kernel Module";
 string dest ="/media/anuj/New Volume/TestDir";
 
 LogWriter::errorLogInitializer();
@@ -18,5 +18,4 @@ objDataCopy.startDataCopy();
 
 return 0;
 }
-
 
