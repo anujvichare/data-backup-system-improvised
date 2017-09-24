@@ -7,7 +7,7 @@ DEP_HEADER =  header_files/log_writer.h header_files/tree_scanner.h header_files
 
 build: log_writer.o tree_scanner.o main.o data_copy.o pipe_handler.o
 	
-	g++ -std=c++11 -g -o run.out log_writer.o tree_scanner.o data_copy.o pipe_handler.o main.o
+	g++ -pthread -std=c++11 -g -o run.out log_writer.o tree_scanner.o data_copy.o pipe_handler.o main.o
 	rm *.o
 clean: 
 	rm *log *out

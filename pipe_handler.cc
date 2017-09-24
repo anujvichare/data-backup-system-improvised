@@ -17,25 +17,57 @@ PipeHandler::PipeHandler()
 	int retValue;
 	int fd[2];
 	
+/*************************
+* code for namedpipe(FIFO)
+*
+**************************/
+	string fifo = "/tmp/data_backup_system_pipe"; 
+	
+	int status = mkfifo(fifo.c_str(),0666);
+	if(status < 0)
+	{
+		perror("unable to create FIFO");
+		cout<<errno;
+		exit(0);
+		
+	}
+
+	fd[0] = open(fifo.c_str(), O_RDONLY);
+	if(fd[0] < 0)
+	{
+		perror("cant open fifo to read");
+	
+	}
+	fd[1] = open(fifo.c_str(), O_WRONLY);
+	if(fd[1] < 0)
+	{
+		perror("cant open fifo to write");
+	}
+/*
 	if((retValue = pipe2(fd, O_NONBLOCK)) < 0)
 	{
 		
 		perror("Unable to create Pipe: exiting...");
 		exit(0);
 	}	
+*/
 	
 	objLogWriter.assignFileName("PipeHandler");
 	readerDescriptor = fd[0];
 	writerDescriptor = fd[1];
+
 	
 	objLogWriter.writeToLog("Pipe Created successfully");
-
+cout<<"..";
 }
 
 PipeHandler::~PipeHandler()
 {
 	close(readerDescriptor);
 	close(writerDescriptor);
+	
+	unlink("/tmp/data_backup_system_pipe");
+
 	objLogWriter.writeToLog("pipe closed");
 }
 
