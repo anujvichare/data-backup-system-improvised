@@ -43,6 +43,11 @@ PipeHandler::PipeHandler()
 	{
 		perror("cant open fifo to write");
 	}
+
+/*********************
+* unnamed pipe code
+*
+**********************/
 /*
 	if((retValue = pipe2(fd, O_NONBLOCK)) < 0)
 	{
