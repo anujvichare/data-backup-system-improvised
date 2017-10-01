@@ -19,6 +19,9 @@ DataCopy::DataCopy(const char* startRootDir, const char* startDestDir)
 	objLogWriter.assignFileName(THISCLASSNAME);
 	sourceRootDir.assign(startRootDir);
 	destRootDir.assign(startDestDir);
+
+	
+	objPipeHandler = new PipeHandler(READFROMPIPE);	
 }
 DataCopy::~DataCopy()
 {}
@@ -146,7 +149,9 @@ int DataCopy::startDataCopy()
 	do
 	{
 		objReadDataFromPipe = EmptyStruct;
-		int charsRead = PipeHandler::instance()->readFromPipe(objReadDataFromPipe);
+		//int charsRead = PipeHandler::instance()->readFromPipe(objReadDataFromPipe);
+	
+		int charsRead = objPipeHandler->readFromPipe(objReadDataFromPipe);
 		if(charsRead == -1)
 		{
 			usleep(10000);
@@ -155,7 +160,7 @@ int DataCopy::startDataCopy()
 
 		switch(objReadDataFromPipe.copymode)
 		{
-			case COPYWITHDIRSTRUCTURE : //cout<<"COPYWITHDIRSTRUCTURE"<<endl;
+			case COPYWITHDIRSTRUCTURE : // cout<<"COPYWITHDIRSTRUCTURE"<<endl;
 							if(createDirStructure() == 0)
 							{
 								if(copyFileData() != 0)
@@ -169,7 +174,7 @@ int DataCopy::startDataCopy()
 							}
 							
 							break;
-			case COPYONLYFILE : //cout<<"COPYONLYFILE"<<endl;
+			case COPYONLYFILE : // cout<<"COPYONLYFILE"<<endl;
  
 							if(copyFileData() != 0)	
 							{
@@ -177,7 +182,7 @@ int DataCopy::startDataCopy()
 							}
 							break;
 
-			case OVERWRITEFILE : //cout<<"OVERWITEFILE"<<endl;
+			case OVERWRITEFILE :// cout<<"OVERWITEFILE"<<endl;
 
 							if(copyFileData() != 0)	
 							{
@@ -185,7 +190,7 @@ int DataCopy::startDataCopy()
 							}
 							break;
 
-			case SCANCOMPLETE :  //cout<<"SCANCOMPLETE"<<endl;
+			case SCANCOMPLETE : // cout<<"SCANCOMPLETE"<<endl;
 
 						runFlag = COMPLETE;
 							break;

@@ -31,8 +31,10 @@ int main(int argc, char *argv[])
 pthread_t threadId[2];
 void* exitStatus[2];
 
- source="/home/anuj/PROGS/LSP/Marvellous Kernel Module";
+ source="/home/anuj/PROGS/LSP";
  dest ="/media/anuj/New Volume/TestDir";
+
+PipeHandler objPipeHandler(CREATEPIPE);
 
 //string *paths[2];
 //paths[0] = &source;
@@ -49,6 +51,8 @@ pthread_join(threadId[1], &exitStatus[1]);
 
 
 printf("\nno of file scanned %d \n",temp_no_of_files);
+
+objPipeHandler.~PipeHandler();
 
 return 0;
 }

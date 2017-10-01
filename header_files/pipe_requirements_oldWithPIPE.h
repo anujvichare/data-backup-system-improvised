@@ -25,19 +25,10 @@
 #define COPYWITHDIRSTRUCTURE 2
 #define OVERWRITEFILE 3
 #define SCANCOMPLETE 0
-#define CREATEPIPE 10
-#define READFROMPIPE 11
-#define WRITETOPIPE 12
 
-/*
-typedef enum
-{  = 10,
- READFROMPIPE = 11,
- WRITETOPIPE = 12
-} PIPEFLAGS;
-
-PIPEFLAGS pipeFlags;
-*/
+#define CREATEPIPE 0
+#define READFROMPIPE 1
+#define WRITETOPIPE 2
 
 //structure to write and read data from file
 typedef struct DataInPipe
@@ -59,13 +50,12 @@ static const DataInPipe EmptyStruct = {0,"/0","/0","/0"};
 	private:
 	  int readerDescriptor, writerDescriptor;
 	  LogWriter objLogWriter; 	
-//	  static PipeHandler *pipeHandler;
+ 	  PipeHandler();
+	  static PipeHandler *pipeHandler;
 	
 	public:
-	  PipeHandler(int);
-	  PipeHandler();
 	  ~PipeHandler();
-
+	  static PipeHandler* instance();
 	  int writeToPipe(DataInPipe &);
 	  int readFromPipe(DataInPipe &);
 

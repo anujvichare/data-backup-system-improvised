@@ -1,0 +1,25 @@
+#include"header_files/main.h"
+
+
+int main(int argc, char *argv[])
+{
+
+PipeHandler objPipeHandler(CREATEPIPE); 
+
+string source="/home/anuj/PROGS/LSP";
+string dest ="/media/anuj/New Volume/TestDir";
+
+LogWriter::errorLogInitializer();
+
+FileTreeScanner obj(source.c_str(),dest.c_str());
+
+cout<<"\n__"<<obj.startScanning();
+printf("\nno of file scanned %d \n",temp_no_of_files);
+
+DataCopy objDataCopy(source.c_str(), dest.c_str());
+objDataCopy.startDataCopy();
+
+objPipeHandler.~PipeHandler();
+
+return 0;
+}

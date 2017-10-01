@@ -12,6 +12,8 @@ FileTreeScanner::FileTreeScanner(const char* startRootDir, const char* startDest
 	
 	sourceRootDir.assign(startRootDir);
 	destRootDir.assign(startDestDir);
+
+	objPipeHandler = new PipeHandler(WRITETOPIPE);//pipeflag.WRITETOPIPE);
 }
 
 FileTreeScanner::FileTreeScanner(const char* startdir)
@@ -21,6 +23,8 @@ FileTreeScanner::FileTreeScanner(const char* startdir)
 	objLogWriter.assignFileName(THISCLASSNAME);	
 	
 	sourceRootDir.assign(startdir);
+
+	objPipeHandler = new PipeHandler(WRITETOPIPE);//pipeflag.WRITETOPIPE);
 
 }
 
@@ -193,8 +197,10 @@ int FileTreeScanner::ScanFiles(string tempPath)
 					objDataInPipe.copymode = OVERWRITEFILE;
 //write(1,&objDataInPipe,1501);
 //cout<<"=========================================================================="<<endl;
-					PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
+				//	PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
 			
+					objPipeHandler->writeToPipe(objDataInPipe);//write to pipe
+					
 					objLogWriter.writeToLog("File Modified : "+ filepath);
 				
 				}
@@ -221,8 +227,10 @@ int FileTreeScanner::ScanFiles(string tempPath)
 					objDataInPipe.copymode = COPYONLYFILE;
 //write(1,&objDataInPipe,1501);
 //cout<<"=========================================================================="<<endl;
-					PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
+				//	PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
 
+					objPipeHandler->writeToPipe(objDataInPipe);//write to pipe
+					
 					objLogWriter.writeToLog("Path Exists till parrent dir : " + tempStr);
 					objLogWriter.writeToLog("  +-- " + filepath);
 				}
@@ -234,8 +242,10 @@ int FileTreeScanner::ScanFiles(string tempPath)
 					objDataInPipe.copymode = COPYWITHDIRSTRUCTURE;
 //write(1,&objDataInPipe,1501);
 //cout<<"=========================================================================="<<endl;
-					PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
+				//	PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
 
+					objPipeHandler->writeToPipe(objDataInPipe);//write to pipe
+					
 					objLogWriter.writeToLog("Path Exists till dir : " + tempStr);
 					objLogWriter.writeToLog("  +-- " + filepath);
 				}
@@ -263,7 +273,7 @@ int FileTreeScanner::startScanning()
 	strcpy(objDataInPipe.DestFilePath,"");
 	strcpy(objDataInPipe.existPath,"");
 	objDataInPipe.copymode = SCANCOMPLETE;
-	PipeHandler::instance()->writeToPipe(objDataInPipe);
+	objPipeHandler->writeToPipe(objDataInPipe);
 	
 	
 	return 0;

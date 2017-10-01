@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////
 //
-//	file contains functions for Named pipe handeling
+//	file contains functions for pipe handeling
 //
 ///////////////////////////////////////////////////////////
 
@@ -11,78 +11,90 @@
 // 	constructors and destructors
 //
 //////////////////////////////////////////////////////////
+
 PipeHandler::PipeHandler()
 {
-
-}
-PipeHandler::PipeHandler(int task)
-{
-	
-	readerDescriptor = 0;
-	writerDescriptor = 0;
-	
-	objLogWriter.assignFileName("PipeHandler");
 	int retValue;
+	int fd[2];
 	
+/*************************
+* code for namedpipe(FIFO)
+*
+**************************/
 	string fifo = "/tmp/data_backup_system_pipe"; 
 	
-	switch(task)	
-	{	
+	int status = mkfifo(fifo.c_str(),0666);
+	if(status < 0)
+	{
+		perror("unable to create FIFO");
+		cout<<errno;
+		exit(0);
+		
+	}
+
+	fd[0] = open(fifo.c_str(), O_RDONLY);
+	if(fd[0] < 0)
+	{
+		perror("cant open fifo to read");
 	
-	case CREATEPIPE :
+	}
+	fd[1] = open(fifo.c_str(), O_WRONLY);
+	if(fd[1] < 0)
+	{
+		perror("cant open fifo to write");
+	}
 
-			int status;
-			status = mkfifo(fifo.c_str(),0666);
-			if(status < 0)
-			{
-				perror("unable to create FIFO");
-				cout<<errno;
-				exit(0);
-				
-			}
-
-			objLogWriter.writeToLog("Pipe Created successfully");
-			break;
-
-	case READFROMPIPE :
-
-			readerDescriptor = open(fifo.c_str(), O_RDONLY);
-			if(readerDescriptor < 0)
-			{
-				perror("cant open fifo to read");
-			
-			}
-			break;
-			
-	case WRITETOPIPE :
+/*********************
+* unnamed pipe code
+*
+**********************/
+/*
+	if((retValue = pipe2(fd, O_NONBLOCK)) < 0)
+	{
 		
-			writerDescriptor = open(fifo.c_str(), O_WRONLY);
-			if(writerDescriptor < 0)
-			{
-				perror("cant open fifo to write");
-			}
-			break;
+		perror("Unable to create Pipe: exiting...");
+		exit(0);
+	}	
+*/
+	
+	objLogWriter.assignFileName("PipeHandler");
+	readerDescriptor = fd[0];
+	writerDescriptor = fd[1];
 
-	default :
-			break;
-	};	
-
-		
+	
+	objLogWriter.writeToLog("Pipe Created successfully");
+cout<<"..";
 }
 
 PipeHandler::~PipeHandler()
 {
-	if(readerDescriptor > 2)
-		 close(readerDescriptor);
-	
-	if(writerDescriptor > 2)  
-		 close(writerDescriptor);
+	close(readerDescriptor);
+	close(writerDescriptor);
 	
 	unlink("/tmp/data_backup_system_pipe");
 
 	objLogWriter.writeToLog("pipe closed");
 }
 
+/////////////////////////////////////////////////////////
+//
+//	name:		instance()
+//	parameters:	null
+//	return value:	Pipehandler*
+//	purpose:	factory method to return instance of a singleton class
+//
+//////////////////////////////////////////////////////////
+
+PipeHandler *PipeHandler::pipeHandler;
+PipeHandler* PipeHandler::instance()
+{
+	if(!pipeHandler)
+	{
+		pipeHandler = new PipeHandler();
+		cout<<"pipe initialization..";
+	}
+	return pipeHandler;
+}
 
 /////////////////////////////////////////////////////////
 //

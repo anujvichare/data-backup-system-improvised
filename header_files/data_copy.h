@@ -14,8 +14,8 @@
 #include<sys/stat.h>
 
 
-#include"pipe_requirements.h"
 #include"log_writer.h"
+#include"pipe_requirements.h"
 
 using namespace std;
 
@@ -36,7 +36,8 @@ class DataCopy
 
 		int createDirStructure();
 		int copyFileData();
-	
+		
+		PipeHandler *objPipeHandler;	
 	public:
 		DataCopy(const char*, const char*);
 		~DataCopy();

@@ -37,7 +37,10 @@ class FileTreeScanner
 		bool IsFileExist(const char*);
 		string ParsePath(const char*);
 		int ScanFiles(string);		
-
+		
+//		PIPEFLAGS pipeflag;	
+	
+		PipeHandler *objPipeHandler;	
 	public:
 		//constructor, destructor
 		FileTreeScanner(const char*, const char*);
