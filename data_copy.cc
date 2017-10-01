@@ -122,13 +122,16 @@ int DataCopy::copyFileData()
                   perror("newfp open :"); 
 		write(2,destFileName,100);
                   return -1; 
-        } 
+          } 
            
           while((charsCopied=read(fdOld,buffer,sizeof(buffer)))>0) 
           { 
                  write(fdNew,buffer,charsCopied); 
           } 
   
+	
+	close(fdNew);
+	close(fdOld);
 return 0;
 }
 

@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 pthread_t threadId[2];
 void* exitStatus[2];
 
- source="/home/anuj/PROGS/LSP";
+ source="/home/anuj/PROGS";
  dest ="/media/anuj/New Volume/TestDir";
 
 PipeHandler objPipeHandler(CREATEPIPE);

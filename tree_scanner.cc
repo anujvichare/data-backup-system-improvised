@@ -195,8 +195,7 @@ int FileTreeScanner::ScanFiles(string tempPath)
 					strcpy(objDataInPipe.DestFilePath,destFilePath.c_str());
 					strcpy(objDataInPipe.existPath, "");
 					objDataInPipe.copymode = OVERWRITEFILE;
-//write(1,&objDataInPipe,1501);
-//cout<<"=========================================================================="<<endl;
+				
 				//	PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
 			
 					objPipeHandler->writeToPipe(objDataInPipe);//write to pipe
@@ -225,8 +224,6 @@ int FileTreeScanner::ScanFiles(string tempPath)
 					strcpy(objDataInPipe.DestFilePath,destFilePath.c_str());
 					strcpy(objDataInPipe.existPath,"");
 					objDataInPipe.copymode = COPYONLYFILE;
-//write(1,&objDataInPipe,1501);
-//cout<<"=========================================================================="<<endl;
 				//	PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
 
 					objPipeHandler->writeToPipe(objDataInPipe);//write to pipe
@@ -240,8 +237,6 @@ int FileTreeScanner::ScanFiles(string tempPath)
 					strcpy(objDataInPipe.DestFilePath,destFilePath.c_str());
 					strcpy(objDataInPipe.existPath,tempStr.c_str());
 					objDataInPipe.copymode = COPYWITHDIRSTRUCTURE;
-//write(1,&objDataInPipe,1501);
-//cout<<"=========================================================================="<<endl;
 				//	PipeHandler::instance()->writeToPipe(objDataInPipe);//write to pipe
 
 					objPipeHandler->writeToPipe(objDataInPipe);//write to pipe
@@ -257,9 +252,8 @@ int FileTreeScanner::ScanFiles(string tempPath)
 		
 		filepath = tempPath;
 
-		}
-
-		closedir(dir);
+	}
+	closedir(dir);
 	return 0;
 }
 
