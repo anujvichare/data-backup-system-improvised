@@ -24,7 +24,7 @@
 	int LogWriter::assignFileName(string LogFileName)
 	{
 			
-		if((activityLogFD = open((LogFileName+"_activity.log").c_str(),O_RDWR|O_CREAT,0666))<0)
+		if((activityLogFD = open(("logs/"+LogFileName+"_activity.log").c_str(),O_RDWR|O_CREAT,0666))<0)
 		{
 				perror("unable to open activityLogFile");
 				return -1;
@@ -69,7 +69,7 @@
 	int LogWriter::errorLogFD;
 	int  LogWriter::errorLogInitializer()
 	{
-			if((errorLogFD = open("Errors.log",O_RDWR|O_CREAT,0666))<0)
+			if((errorLogFD = open("logs/Errors.log",O_RDWR|O_CREAT,0666))<0)
 			{
 				perror("Unable to create Error.log");
 				

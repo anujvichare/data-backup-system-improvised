@@ -11,6 +11,7 @@ void* dataCopyThreadFunction(void * params)
 
 	DataCopy objDataCopy(source.c_str(), dest.c_str());
 	objDataCopy.startDataCopy();
+
 return NULL;
 }
 
@@ -28,32 +29,39 @@ return NULL;
 
 int main(int argc, char *argv[])
 {
-pthread_t threadId[2];
-void* exitStatus[2];
+	pthread_t threadId[2];
+	void* exitStatus[2];
+	
+	LogWriter::errorLogInitializer();
+	
+	if(argc != 3)
+	{
+		perror("Arguments are not correct");
+		exit(0);
+	}
+	
+	source += argv[1]; //"/home/anuj/PROGS";
+	dest += argv[2]; //"/media/anuj/New Volume/TestDir";
 
- source="/home/anuj/PROGS";
- dest ="/media/anuj/New Volume/TestDir";
+	PipeHandler objPipeHandler(CREATEPIPE);
 
-PipeHandler objPipeHandler(CREATEPIPE);
+	//string *paths[2];
+	//paths[0] = &source;
+	//paths[1] = &dest;
 
-//string *paths[2];
-//paths[0] = &source;
-//paths[1] = &dest;
+	//(void*)paths;
 
-//(void*)paths;
+	pthread_create(&threadId[0], NULL, fileScannerThreadFunction, NULL);
+	pthread_create(&threadId[1], NULL, dataCopyThreadFunction, NULL);
 
-LogWriter::errorLogInitializer();
-pthread_create(&threadId[0], NULL, fileScannerThreadFunction, NULL);
-pthread_create(&threadId[1], NULL, dataCopyThreadFunction, NULL);
-
-pthread_join(threadId[0], &exitStatus[0]);
-pthread_join(threadId[1], &exitStatus[1]);
+	pthread_join(threadId[0], &exitStatus[0]);
+	pthread_join(threadId[1], &exitStatus[1]);
 
 
-printf("\nno of file scanned %d \n",temp_no_of_files);
+	printf("\n no of file scanned %d \n",temp_no_of_files);
 
-objPipeHandler.~PipeHandler();
+	objPipeHandler.~PipeHandler();
 
-return 0;
+	return 0;
 }
 

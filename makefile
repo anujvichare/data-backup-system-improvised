@@ -10,18 +10,18 @@ build: log_writer.o tree_scanner.o main.o data_copy.o pipe_handler.o
 	g++ -pthread -std=c++11 -g -o run.out log_writer.o tree_scanner.o data_copy.o pipe_handler.o main.o
 	rm *.o
 clean: 
-	rm *log *out
+	rm logs/*log *out
 
 run:
-	./run.out 
+	./autoBackup.bash
 
 git-pull:
 	git pull origin master
 
 git-push:
-	count=`ls -l *log 2>/dev/null | wc -l`; \
+	count=`ls -l logs/*log 2>/dev/null | wc -l`; \
 	if [ $$count -ne 0 ]; then \
-	   rm *log; \
+	   rm logs/*log; \
 	fi
 	count=`ls -l *out 2>/dev/null | wc -l`; \
 	if [ $$count != 0 ]; then \
