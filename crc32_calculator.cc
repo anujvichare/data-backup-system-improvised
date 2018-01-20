@@ -23,7 +23,7 @@ CRC32Calc::CRC32Calc(string sourceFile, string destFile)
 	destCheckSum = 0;
 }
 
-void* CRC32Calc::threadFunc(void * arg)
+void* CRC32Calc::threadFunc_sourceFile(void *arg)
 {
 /*	struct temp obj;
 		obj.thisPtr = (*(struct temp*)arg).thisPtr;
@@ -32,9 +32,18 @@ void* CRC32Calc::threadFunc(void * arg)
 	reinterpret_cast<CRC32Calc*>(obj.thisPtr)->crc32file(obj.flag);
 */
 
-//	reinterpret_cast<CRC32Calc*>( (*(struct temp*)arg).thisPtr)->crc32file( (*(struct temp *)arg).flag);
+	//reinterpret_cast<CRC32Calc*>( (*(struct temp*)arg).thisPtr)->crc32file( (*(struct temp *)arg).flag);
 
 	reinterpret_cast<CRC32Calc*>(arg)->crc32file(0);
+}
+
+
+void* CRC32Calc::threadFunc_destFile(void *arg)
+{
+
+//	reinterpret_cast<CRC32Calc*>( (*(struct temp*)arg).thisPtr)->crc32file( (*(struct temp *)arg).flag);
+
+	reinterpret_cast<CRC32Calc*>(arg)->crc32file(1);
 }
 
 bool CRC32Calc::calcCheckSum()
@@ -49,17 +58,21 @@ bool CRC32Calc::calcCheckSum()
 	
 	struct temp obj;
 	obj.thisPtr = this;
-	obj.flag = flag;
+	obj.flag = 0;
+	pthread_create(&thread[0], NULL, &CRC32Calc::threadFunc_sourceFile,(void*)this);
 
-	pthread_create(&thread[0], NULL, &CRC32Calc::threadFunc, this);
-
-	flag = 1;
-	pthread_create(&thread[1], NULL, &CRC32Calc::threadFunc, this);
+	struct temp obj1;
+	obj1.thisPtr = this;
+	obj1.flag = 1;
+	pthread_create(&thread[1], NULL, &CRC32Calc::threadFunc_destFile, (void*)this);
 
 
 	pthread_join(thread[0], &exit_status[0]);
 	pthread_join(thread[1], &exit_status[1]);
 
+
+//	cout<<sourceCheckSum<<endl;
+//	cout<<destCheckSum<<endl;
 
 	if(sourceCheckSum == destCheckSum)
 		return true;
@@ -77,10 +90,12 @@ int CRC32Calc::crc32file( int id )
 	{
 		case 0 :
 			name = sourceFilePath.c_str();
+		//	cout<<name;
 			break;
 		
 		case 1 :
-			name - destFilePath.c_str();
+			name = destFilePath.c_str();
+		//	cout<<name;
 			break;
 	}; 	
 	
@@ -128,10 +143,12 @@ int CRC32Calc::crc32file( int id )
 	switch(id)
 	{
 		case 0 :
-			sourceCheckSum = crc32;
+			sourceCheckSum = oldcrc; //crc32;
+			//cout<<sourceCheckSum<<"  "<<oldcrc<<endl ;
 			break;
 		case 1 : 
-			destCheckSum = crc32;
+			destCheckSum = oldcrc; //crc32;
+			//cout<<destCheckSum<<" "<<oldcrc<<endl;
 			break;
 	};
 

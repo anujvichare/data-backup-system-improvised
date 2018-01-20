@@ -141,7 +141,8 @@ private :
 	
 	string sourceFilePath, destFilePath;
 	
-	static void* threadFunc(void *);
+	static void* threadFunc_sourceFile(void *);
+	static void* threadFunc_destFile(void *);
 
 public :
 	CRC32Calc();

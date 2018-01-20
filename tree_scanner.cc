@@ -37,11 +37,16 @@ FileTreeScanner::FileTreeScanner(const char* startdir)
 //
 ///////////////////////////////////////////////////
 
-bool FileTreeScanner::CheckSum(const char *sourceFilePath, const char *destinatioFilePath)
+bool FileTreeScanner::CheckSum(const char *sourceFilePath, const char *destinationFilePath)
 {
 
 	//todo add code of checksum of files
-	return false;
+
+	CRC32Calc obj(sourceFilePath, destinationFilePath);
+
+	return obj.calcCheckSum();
+
+//	return false;
 }
 
 ////////////////////////////////////////////////////

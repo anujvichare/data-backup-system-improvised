@@ -15,6 +15,7 @@
 
 #include"log_writer.h"
 #include"pipe_requirements.h"
+#include"crc32_calculator.h"
 
 using namespace std;
 

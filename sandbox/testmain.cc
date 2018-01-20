@@ -1,12 +1,18 @@
 
-#include"header_files/pipe_requirements.h"
-#include<string.h>
+#include"header_files/crc32_calculator.h"
 #include<iostream>
-
-using namespace std;
 
 int main()
 {
+
+CRC32Calc obj("../abc.txt", "./abc.txt");
+
+cout<<obj.calcCheckSum();
+
+return 0;
+}
+
+/*
 
 DataInPipe obj[5];
 
@@ -30,10 +36,8 @@ int r2 = PipeHandler::instance()->readFromPipe(obj[3]);
 int r3 =  PipeHandler::instance()->readFromPipe(obj[4]);
 cout<<w1<<","<<w2<<"::"<<r1<<","<<r2<<","<<r3 ;
 
-return 0;
-}
 
-
+*/
 
 /*
  int main()

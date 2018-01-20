@@ -1,13 +1,13 @@
 #makefile to build, clean and run a project
 
-DEP_HEADER =  header_files/log_writer.h header_files/tree_scanner.h header_files/data_copy.h header_files/pipe_requirements.h
+DEP_HEADER =  header_files/log_writer.h header_files/tree_scanner.h header_files/data_copy.h header_files/pipe_requirements.h header_files/crc32_calculator.h
 
 %.o: %.cc $(DEP_HEADER)
 	g++ -std=c++11 -g -c -o $@ $<
 
-build: log_writer.o tree_scanner.o main.o data_copy.o pipe_handler.o
+build: log_writer.o tree_scanner.o main.o data_copy.o pipe_handler.o crc32_calculator.o
 	
-	g++ -pthread -std=c++11 -g -o run.out log_writer.o tree_scanner.o data_copy.o pipe_handler.o main.o
+	g++ -pthread -std=c++11 -g -o run.out crc32_calculator.o log_writer.o tree_scanner.o data_copy.o pipe_handler.o main.o
 	rm *.o
 clean: 
 	rm logs/*log *out
