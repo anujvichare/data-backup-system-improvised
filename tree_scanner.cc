@@ -205,7 +205,7 @@ int FileTreeScanner::ScanFiles(string tempPath)
 			
 					objPipeHandler->writeToPipe(objDataInPipe);//write to pipe
 					
-					objLogWriter.writeToLog("File Modified : "+ filepath);
+					objLogWriter.writeToLog("Overwrite file : "+ filepath);
 				
 				}
 				else
@@ -233,8 +233,8 @@ int FileTreeScanner::ScanFiles(string tempPath)
 
 					objPipeHandler->writeToPipe(objDataInPipe);//write to pipe
 					
-					objLogWriter.writeToLog("Path Exists till parrent dir : " + tempStr);
-					objLogWriter.writeToLog("  +-- " + filepath);
+					objLogWriter.writeToLog("Copy Only file: " + filepath);
+
 				}
 				else
 				{
@@ -247,7 +247,7 @@ int FileTreeScanner::ScanFiles(string tempPath)
 					objPipeHandler->writeToPipe(objDataInPipe);//write to pipe
 					
 					objLogWriter.writeToLog("Path Exists till dir : " + tempStr);
-					objLogWriter.writeToLog("  +-- " + filepath);
+					objLogWriter.writeToLog("  +------------------- " + filepath);
 				}
 					
 			}

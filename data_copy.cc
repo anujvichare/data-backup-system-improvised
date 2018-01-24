@@ -68,7 +68,7 @@ int DataCopy::createDirStructure()
 						if(mkdir(tempPath.c_str(),0777) != 0) //sourceStatBuf.st_mode); 
 						{
 							cout<<errno;
-							perror("Cannot create directory: ");
+							perror("_DC_ Cannot create directory: ");
 							return -1;
 						}
 					}
@@ -104,14 +104,14 @@ int DataCopy::copyFileData()
          fdOld=open(sourceFileName,O_RDONLY); 
           if(fdOld<0) 
           { 
-                  perror("open :"); 
+                  perror("_DC_ open :"); 
                   return -1; 
           } 
            
           stat_status=stat(sourceFileName,&statBuf); 
           if(stat_status!=0) 
           { 
-                  perror("stat fails : "); 
+                  perror("_DC_ stat fails : "); 
                   return -1; 
           } 
            
@@ -119,8 +119,8 @@ int DataCopy::copyFileData()
           if(fdNew<0) 
           { 
 		
-                  perror("newfp open :"); 
-		write(2,destFileName,100);
+                  perror("_DC_ newfp open :"); 
+		  write(2,destFileName,100);
                   return -1; 
           } 
            
@@ -176,6 +176,7 @@ int DataCopy::startDataCopy()
 								objLogWriter.writeToLog("Error: creating dir structure");
 							}
 							
+								objLogWriter.writeToLog("Copy with dir structure : "+ (string)objReadDataFromPipe.SourceFilePath);
 							break;
 			case COPYONLYFILE : // cout<<"COPYONLYFILE"<<endl;
  
@@ -183,6 +184,8 @@ int DataCopy::startDataCopy()
 							{
 								objLogWriter.writeToLog("Error : copying data in file");
 							}
+
+								objLogWriter.writeToLog("Copy only file : "+ (string)objReadDataFromPipe.SourceFilePath);
 							break;
 
 			case OVERWRITEFILE :// cout<<"OVERWITEFILE"<<endl;
@@ -191,6 +194,8 @@ int DataCopy::startDataCopy()
 							{
 								objLogWriter.writeToLog("Error : copying data in file");
 							}
+
+								objLogWriter.writeToLog("Overwrite file : "+ (string)objReadDataFromPipe.SourceFilePath);
 							break;
 
 			case SCANCOMPLETE : // cout<<"SCANCOMPLETE"<<endl;
