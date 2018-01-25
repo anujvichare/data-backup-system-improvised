@@ -1,7 +1,4 @@
 # Data Backup System (improvised)
 
-This project is under development.
-
-Trying to build a system level app for learning purpose which will copy /home directory to the specified location. only if the checksum of file is changed.
-
-app gets called at system boot and before shutdown.
+A system level application created to take backup of directory to specified location. Application takes backup of modified file only.
+app gets called on systrem boot and shutdown.
