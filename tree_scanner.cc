@@ -40,13 +40,10 @@ FileTreeScanner::FileTreeScanner(const char* startdir)
 bool FileTreeScanner::CheckSum(const char *sourceFilePath, const char *destinationFilePath)
 {
 
-	//todo add code of checksum of files
-
 	CRC32Calc obj(sourceFilePath, destinationFilePath);
 
 	return obj.calcCheckSum();
 
-//	return false;
 }
 
 ////////////////////////////////////////////////////
@@ -147,6 +144,8 @@ int FileTreeScanner::ScanFiles(string tempPath)
 	
 	filepath = tempPath;	
 		
+	stack <string> dirEntries;
+	
 	dir=opendir(tempPath.c_str());
 	if(dir==NULL)
 	{
@@ -163,9 +162,17 @@ int FileTreeScanner::ScanFiles(string tempPath)
 			//cout<<dirEntry->d_name<<":"<<tempPath<<endl;
 			continue;
 		}
+	
+		dirEntries.push(dirEntry -> d_name);
+	}
+	closedir(dir);
 
+	while(!dirEntries.empty())
+	{
+		
+		string fileName = dirEntries.top();
 		filepath += "/";	
-		filepath +=  dirEntry->d_name;
+		filepath +=  fileName; //dirEntry->d_name;
 
 		stat_status = lstat(filepath.c_str(),&stat_buf);
 		if(stat_status < 0)
@@ -257,8 +264,9 @@ int FileTreeScanner::ScanFiles(string tempPath)
 		
 		filepath = tempPath;
 
+		dirEntries.pop();
 	}
-	closedir(dir);
+//	closedir(dir);
 	return 0;
 }
 

@@ -11,7 +11,7 @@
 #include<unistd.h>
 #include<stdio.h>
 #include<errno.h>
-
+#include<stack>
 
 #include"log_writer.h"
 #include"pipe_requirements.h"
