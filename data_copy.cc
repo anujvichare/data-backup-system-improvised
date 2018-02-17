@@ -24,7 +24,10 @@ DataCopy::DataCopy(const char* startRootDir, const char* startDestDir)
 	objPipeHandler = new PipeHandler(READFROMPIPE);	
 }
 DataCopy::~DataCopy()
-{}
+{
+	objLogWriter.~LogWriter();
+	objPipeHandler->~PipeHandler();
+}
 
 /////////////////////////////////////////////////////
 //

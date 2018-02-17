@@ -28,6 +28,13 @@ FileTreeScanner::FileTreeScanner(const char* startdir)
 
 }
 
+FileTreeScanner::~FileTreeScanner()
+{
+	objPipeHandler->~PipeHandler();
+	objLogWriter.~LogWriter();
+
+}
+
 ///////////////////////////////////////////////////
 //
 //	name:		CheckSum()

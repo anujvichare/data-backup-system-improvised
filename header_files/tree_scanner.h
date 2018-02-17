@@ -46,7 +46,7 @@ class FileTreeScanner
 		//constructor, destructor
 		FileTreeScanner(const char*, const char*);
 		FileTreeScanner(const char*);
-		~FileTreeScanner(){}
+		~FileTreeScanner();
 	
 		int startScanning();
 

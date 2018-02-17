@@ -8,7 +8,7 @@ BackupPath=/media/anuj/E\ drive/TestDir
 
 Flag=0
 
-ls "$BackupPath" 2> /dev/null
+ls "$BackupPath" > /dev/null 2>&1
 if [ $? -eq 0 ] 
 then	
 	Flag=1
@@ -23,9 +23,14 @@ fi
 
 if [ $Flag -eq 1 ]
 then
-	echo "execution"
-	./run.out /home/anuj/PROGS /media/anuj/E\ drive/TestDir
+#	echo "execution"
+	if [ ! -d /home/anuj/DBSlogs ];
+	then
+
+		mkdir /home/anuj/DBSlogs
+	fi
+	/home/anuj/PROGS/Git/data-backup-system-improvised/run.out /home/anuj/PROGS /media/anuj/E\ drive/TestDir
 
 fi
 
-
+exit 0

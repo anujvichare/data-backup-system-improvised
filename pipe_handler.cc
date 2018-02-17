@@ -81,6 +81,8 @@ PipeHandler::~PipeHandler()
 	unlink("/tmp/data_backup_system_pipe");
 
 	objLogWriter.writeToLog("pipe closed");
+
+	objLogWriter.~LogWriter();
 }
 
 
